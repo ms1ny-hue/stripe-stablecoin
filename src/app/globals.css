@@ -1,26 +1,124 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Design system: refined light editorial. Navy ink + gold, geometric display
+   (Jost ≈ Century Gothic), serif accents (Newsreader), tabular mono for money.
+--------------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #faf9f5;
+  --paper-2: #f3f1ea;
+  --ink: #16203a;
+  --ink-soft: #44506b;
+  --ink-faint: #8b93a7;
+  --navy: #0e2148;
+  --navy-deep: #081429;
+  --gold: #a9842f;
+  --gold-bright: #c8a24a;
+  --line: #e3dfd3;
+  --good: #1f7a55;
+
+  --font-display: var(--font-jost);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-mono-num);
+
+  --maxw: 72rem;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-navy: var(--navy);
+  --color-gold: var(--gold);
+  --font-display: var(--font-jost);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-mono-num);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display), system-ui, sans-serif;
+  /* faint paper grain for atmosphere, not noise */
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(14, 33, 72, 0.035) 1px,
+    transparent 0
+  );
+  background-size: 22px 22px;
+}
+
+/* tabular numerals everywhere money lives */
+.num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.serif {
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+.shell {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+}
+
+.rule {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+}
+
+/* Hairline-framed surface card */
+.surface {
+  background: linear-gradient(180deg, #fff, var(--paper));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 18px 40px -28px rgba(14, 33, 72, 0.4);
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise {
+  animation: riseIn 0.7s var(--ease) both;
+}
+
+a {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
 }
