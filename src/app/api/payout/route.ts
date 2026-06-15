@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { format } from "@/lib/stablecoin";
 import { compareToBaseline, quotePayout } from "@/lib/payout";
+import { getMarketSnapshot } from "@/lib/feeds";
 import { stripe, isLiveKey, dashboardUrl } from "@/lib/stripe";
 
 export const runtime = "nodejs";
@@ -33,11 +34,24 @@ export async function POST(req: Request) {
     );
   }
 
+  // Live market snapshot drives the real peg, on-chain gas, and FX rate.
+  const market = await getMarketSnapshot();
+  const fxRate =
+    parsed.destinationCurrency === "USDC"
+      ? undefined
+      : market.fx.rates[parsed.destinationCurrency];
+
   const quote = quotePayout({
     amountUsd: parsed.amountUsd,
     platformFeeBps: parsed.platformFeeBps,
     fxSpreadBps: parsed.fxSpreadBps,
     instant: parsed.instant,
+    live: {
+      pegUsd: market.crypto.usdcUsd,
+      networkFeeUsd: market.gas.transferUsd,
+      fxRate,
+      localCurrency: fxRate ? parsed.destinationCurrency : undefined,
+    },
   });
   const comparison = compareToBaseline(quote, parsed.baseline);
 
@@ -71,6 +85,22 @@ export async function POST(req: Request) {
         settlementSeconds: quote.settlementSeconds,
         fasterBy: comparison.fasterBy,
         baselineLabel: comparison.label,
+        pegUsd: quote.pegUsd,
+        pegDeviationBps: quote.pegDeviationBps,
+        localAmount: quote.localAmount,
+      },
+      market: {
+        usdcUsd: market.crypto.usdcUsd,
+        ethUsd: market.crypto.ethUsd,
+        gasGwei: market.gas.gasGwei,
+        networkFeeUsd: market.gas.transferUsd,
+        fxRate,
+        fxAsOf: market.fx.asOf,
+        sources: {
+          fx: market.fx.source,
+          crypto: market.crypto.source,
+          gas: market.gas.source,
+        },
       },
       stripe: {
         id: intent.id,

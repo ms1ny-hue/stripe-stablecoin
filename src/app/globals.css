@@ -1,38 +1,41 @@
 @import "tailwindcss";
 
-/* ---------------------------------------------------------------------------
-   Design system: refined light editorial. Navy ink + gold, geometric display
-   (Jost ≈ Century Gothic), serif accents (Newsreader), tabular mono for money.
---------------------------------------------------------------------------- */
+/* ===========================================================================
+   Linear-grade dark system. Near-black canvas, off-white type, a single iris
+   accent, hairline borders, mono labels, generous negative space, restrained
+   motion. Numbers are tabular and color-coded only where they carry signal.
+   =========================================================================== */
 :root {
-  --paper: #faf9f5;
-  --paper-2: #f3f1ea;
-  --ink: #16203a;
-  --ink-soft: #44506b;
-  --ink-faint: #8b93a7;
-  --navy: #0e2148;
-  --navy-deep: #081429;
-  --gold: #a9842f;
-  --gold-bright: #c8a24a;
-  --line: #e3dfd3;
-  --good: #1f7a55;
+  --bg: #08090a;
+  --bg-1: #0d0e10;
+  --bg-2: #121316;
+  --bg-3: #181a1e;
+  --line: #1f2125;
+  --line-2: #292c31;
 
-  --font-display: var(--font-jost);
-  --font-serif: var(--font-newsreader);
-  --font-mono: var(--font-mono-num);
+  --text: #edeef0;
+  --text-2: #9a9ca2;
+  --text-3: #65676d;
 
-  --maxw: 72rem;
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --iris: #6e79d6;
+  --iris-bright: #8a93ef;
+  --pos: #3fb155;
+  --neg: #ef5350;
+  --warn: #d4a64a;
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --maxw: 70rem;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme inline {
-  --color-paper: var(--paper);
-  --color-ink: var(--ink);
-  --color-navy: var(--navy);
-  --color-gold: var(--gold);
-  --font-display: var(--font-jost);
-  --font-serif: var(--font-newsreader);
-  --font-mono: var(--font-mono-num);
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-iris: var(--iris);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 * {
@@ -45,71 +48,105 @@ html {
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-display), system-ui, sans-serif;
-  /* faint paper grain for atmosphere, not noise */
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    rgba(14, 33, 72, 0.035) 1px,
-    transparent 0
-  );
-  background-size: 22px 22px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv01";
+  letter-spacing: -0.011em;
+  /* faint top glow + hairline grid wash */
+  background-image:
+    radial-gradient(60rem 32rem at 50% -8rem, rgba(110, 121, 214, 0.1), transparent 70%),
+    linear-gradient(transparent 0, transparent calc(100% - 1px), rgba(255, 255, 255, 0.012) 100%);
 }
 
-/* tabular numerals everywhere money lives */
+/* mono micro-label: uppercase, tracked, dim */
+.label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
 .num {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
-.eyebrow {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--gold);
-}
-
-.serif {
-  font-family: var(--font-serif), Georgia, serif;
-}
-
-.lead {
-  font-size: clamp(1.15rem, 2.4vw, 1.4rem);
-  line-height: 1.65;
-  color: var(--ink-soft);
-  margin-top: 1.3rem;
-}
-
 .shell {
   width: 100%;
   max-width: var(--maxw);
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 3rem);
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
 }
 
-.rule {
+.lead {
+  font-size: clamp(1.05rem, 2vw, 1.22rem);
+  line-height: 1.62;
+  color: var(--text-2);
+  margin-top: 1.2rem;
+}
+
+/* hairline panel */
+.panel {
+  background: linear-gradient(180deg, var(--bg-1), var(--bg));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.hair {
   height: 1px;
   background: var(--line);
   border: 0;
 }
 
-/* Hairline-framed surface card */
-.surface {
-  background: linear-gradient(180deg, #fff, var(--paper));
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    0 18px 40px -28px rgba(14, 33, 72, 0.4);
+/* accent focus ring used on interactive controls */
+.ring:focus-visible {
+  outline: 2px solid var(--iris);
+  outline-offset: 2px;
 }
 
-@keyframes riseIn {
+/* dark, restrained range sliders (kill the default bright track) */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--line-2);
+  border-radius: 99px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--iris);
+  border: 2px solid var(--bg);
+  cursor: pointer;
+  transition: transform 0.15s var(--ease);
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background: var(--iris-bright);
+}
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--line-2);
+  border-radius: 99px;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--iris);
+  border: 2px solid var(--bg);
+  cursor: pointer;
+}
+
+@keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -117,7 +154,24 @@ body {
   }
 }
 .rise {
-  animation: riseIn 0.7s var(--ease) both;
+  animation: rise 0.6s var(--ease) both;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pos);
+  box-shadow: 0 0 0 3px rgba(63, 177, 85, 0.16);
+  animation: pulse 2.4s ease-in-out infinite;
 }
 
 a {
@@ -125,7 +179,8 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rise {
+  .rise,
+  .live-dot {
     animation: none;
   }
 }

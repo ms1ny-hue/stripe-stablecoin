@@ -6,40 +6,24 @@ export function SiteHeader() {
     <header
       style={{
         borderBottom: "1px solid var(--line)",
-        background: "rgba(250,249,245,0.8)",
-        backdropFilter: "saturate(140%) blur(8px)",
+        background: "rgba(8,9,10,0.72)",
+        backdropFilter: "saturate(140%) blur(10px)",
         position: "sticky",
         top: 0,
-        zIndex: 10,
+        zIndex: 20,
       }}
     >
-      <div className="shell flex items-center justify-between" style={{ height: 64 }}>
-        <Link
-          href="/"
-          className="flex items-center gap-2.5"
-          style={{ textDecoration: "none" }}
-        >
+      <div className="shell flex items-center justify-between" style={{ height: 56 }}>
+        <Link href="/" className="flex items-center gap-2.5" style={{ textDecoration: "none" }}>
           <Mark />
-          <span
-            style={{
-              fontWeight: 600,
-              letterSpacing: "-0.01em",
-              fontSize: "1.02rem",
-            }}
-          >
-            Stablecoin Payouts
+          <span className="num" style={{ fontSize: "0.85rem", letterSpacing: "-0.01em" }}>
+            stablecoin<span style={{ color: "var(--text-3)" }}>/</span>payouts
           </span>
         </Link>
-        <nav className="flex items-center gap-6" style={{ fontSize: "0.92rem" }}>
-          <Link href="/payouts" style={{ textDecoration: "none", color: "var(--ink-soft)" }}>
-            Demo
-          </Link>
-          <a
-            href="https://github.com/ms1ny-hue/stripe-stablecoin"
-            style={{ textDecoration: "none", color: "var(--ink-soft)" }}
-          >
-            Source
-          </a>
+        <nav className="flex items-center gap-6" style={{ fontSize: "0.85rem" }}>
+          <Link href="/payouts" style={navLink}>Console</Link>
+          <Link href="/brief" style={navLink}>Brief</Link>
+          <a href="https://github.com/ms1ny-hue/stripe-stablecoin" style={navLink}>Source</a>
           <SimBadge />
         </nav>
       </div>
@@ -49,51 +33,47 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer
-      style={{ borderTop: "1px solid var(--line)", marginTop: "5rem" }}
-      className="mt-auto"
-    >
+    <footer style={{ borderTop: "1px solid var(--line)", marginTop: "5rem" }} className="mt-auto">
       <div
         className="shell"
-        style={{ paddingBlock: "2.5rem", color: "var(--ink-faint)", fontSize: "0.82rem" }}
+        style={{ paddingBlock: "2.25rem", color: "var(--text-3)", fontSize: "0.78rem", lineHeight: 1.7 }}
       >
-        <p style={{ maxWidth: "48rem", lineHeight: 1.7 }}>
+        <p style={{ maxWidth: "52rem" }}>
           Independent product concept by Michael Stanat. Not affiliated with,
-          endorsed by, or representing any employer or payments provider. Stripe
-          objects are created against a{" "}
-          <strong style={{ color: "var(--ink-soft)" }}>test-mode key</strong>, so
-          no live money moves. Pricing, FX spreads, and settlement times are
-          illustrative. Not financial advice and not a regulated service. Stripe,
-          USDC, and other marks belong to their respective owners.
+          endorsed by, or representing any employer or payments provider. Market
+          data is live from public feeds (CoinGecko, ECB-derived FX, Blockscout).
+          Stripe objects are created against a{" "}
+          <span style={{ color: "var(--text-2)" }}>test-mode key</span>, so no live
+          money moves. Pricing and spreads are illustrative. Not financial advice
+          and not a regulated service. Stripe, USDC, and other marks belong to
+          their respective owners.
         </p>
       </div>
     </footer>
   );
 }
 
+const navLink: React.CSSProperties = {
+  textDecoration: "none",
+  color: "var(--text-2)",
+};
+
 function Mark() {
   return (
     <span
       aria-hidden
       style={{
-        width: 26,
-        height: 26,
-        borderRadius: 7,
-        background: "linear-gradient(150deg, var(--navy), var(--navy-deep))",
+        width: 22,
+        height: 22,
+        borderRadius: 6,
+        border: "1px solid var(--line-2)",
+        background: "linear-gradient(150deg, #15171c, #0c0d10)",
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        boxShadow: "0 6px 16px -8px rgba(14,33,72,0.7)",
       }}
     >
-      <span
-        style={{
-          width: 11,
-          height: 11,
-          borderRadius: "50%",
-          border: "2px solid var(--gold-bright)",
-        }}
-      />
+      <span style={{ width: 9, height: 9, borderRadius: "50%", border: "1.5px solid var(--iris-bright)" }} />
     </span>
   );
 }

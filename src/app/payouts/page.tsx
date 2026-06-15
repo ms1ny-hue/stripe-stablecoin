@@ -1,49 +1,54 @@
 import type { Metadata } from "next";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
+import { MarketTicker } from "@/components/MarketTicker";
 import { PayoutConsole } from "@/components/PayoutConsole";
 
 export const metadata: Metadata = {
-  title: "Payout console — Stablecoin Payouts",
+  title: "Console — Stablecoin Payouts",
   description:
-    "An interactive, simulated stablecoin payout: itemized fees, all-in cost, settlement time, and a comparison against legacy rails.",
+    "Price a USDC payout against live FX, on-chain gas, and the real USDC peg, then settle through the Stripe API in test mode.",
 };
 
 export default function PayoutsPage() {
   return (
     <>
       <SiteHeader />
-      <main className="shell" style={{ paddingBlock: "clamp(2.5rem,6vw,4.5rem)" }}>
-        <div style={{ maxWidth: "44rem", marginBottom: "2rem" }}>
-          <div className="eyebrow rise">Payout console</div>
+      <main className="shell" style={{ paddingBlock: "clamp(2rem,5vw,3.5rem)" }}>
+        <div style={{ maxWidth: "44rem", marginBottom: "1.6rem" }}>
+          <div className="label rise" style={{ color: "var(--iris-bright)" }}>Settlement console</div>
           <h1
             className="rise"
             style={{
-              fontSize: "clamp(2rem,5vw,3.2rem)",
-              letterSpacing: "-0.03em",
+              fontSize: "clamp(1.9rem,5vw,3rem)",
+              letterSpacing: "-0.035em",
               fontWeight: 600,
               marginTop: "0.7rem",
               animationDelay: "60ms",
             }}
           >
-            Price a payout end to end.
+            Price a payout against live markets.
           </h1>
           <p
-            className="rise serif"
+            className="rise"
             style={{
-              fontSize: "1.15rem",
-              color: "var(--ink-soft)",
-              marginTop: "1rem",
+              fontSize: "1.05rem",
+              color: "var(--text-2)",
+              marginTop: "0.9rem",
               lineHeight: 1.6,
               animationDelay: "120ms",
             }}
           >
-            Every figure below is computed by the same money engine that ships in
-            this repo: integer base units, no floating-point drift. Pressing
-            Create in Stripe makes a real USDC PaymentIntent against a Stripe
-            test-mode key, so you get a live object id with no live money.
+            The peg, FX, and gas below are pulled live. Create in Stripe makes a
+            real USDC PaymentIntent against a test-mode key, so you get a genuine
+            object id with no live money.
           </p>
         </div>
-        <div className="rise" style={{ animationDelay: "180ms" }}>
+
+        <div className="rise" style={{ marginBottom: "1.4rem", animationDelay: "160ms" }}>
+          <MarketTicker />
+        </div>
+
+        <div className="rise" style={{ animationDelay: "200ms" }}>
           <PayoutConsole />
         </div>
       </main>

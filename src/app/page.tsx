@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
+import { MarketTicker } from "@/components/MarketTicker";
 
 export default function Home() {
   return (
@@ -7,8 +8,7 @@ export default function Home() {
       <SiteHeader />
       <main>
         <Hero />
-        <Problem />
-        <Wedge />
+        <Features />
         <HowItWorks />
         <Close />
       </main>
@@ -19,272 +19,132 @@ export default function Home() {
 
 function Hero() {
   return (
-    <section className="shell" style={{ paddingBlock: "clamp(3.5rem,9vw,7rem)" }}>
-      <div style={{ maxWidth: "52rem" }}>
-        <div className="eyebrow rise">Product concept · working demo</div>
-        <h1
-          className="rise"
-          style={{
-            fontSize: "clamp(2.4rem, 6vw, 4.4rem)",
-            lineHeight: 1.02,
-            letterSpacing: "-0.03em",
-            fontWeight: 600,
-            marginTop: "1rem",
-            animationDelay: "60ms",
-          }}
-        >
-          Pay anyone, anywhere,
-          <br />
-          in <span style={{ color: "var(--navy)" }}>seconds</span>.{" "}
-          <span className="serif" style={{ fontStyle: "italic", fontWeight: 400 }}>
-            Priced like software.
-          </span>
-        </h1>
-        <p
-          className="rise serif"
-          style={{
-            fontSize: "clamp(1.05rem,2.2vw,1.35rem)",
-            color: "var(--ink-soft)",
-            marginTop: "1.4rem",
-            lineHeight: 1.6,
-            maxWidth: "40rem",
-            animationDelay: "120ms",
-          }}
-        >
-          Cross-border payouts still run on a forty-year-old wire network: days to
-          settle, fees measured in dollars, opaque FX. Stablecoins collapse that
-          to a prefunded balance that moves in seconds. This is a working model of
-          what a platform payout product looks like when it is built that way.
-        </p>
-        <div
-          className="rise"
-          style={{
-            display: "flex",
-            gap: 14,
-            marginTop: "2rem",
-            flexWrap: "wrap",
-            animationDelay: "180ms",
-          }}
-        >
-          <Link href="/payouts" style={cta(true)}>
-            Try the payout demo →
-          </Link>
-          <Link href="/brief" style={cta(false)}>
-            Read the product brief
-          </Link>
-        </div>
+    <section className="shell" style={{ paddingTop: "clamp(3rem,8vw,6rem)", paddingBottom: "2.5rem" }}>
+      <div className="label rise" style={{ color: "var(--iris-bright)" }}>
+        Product concept · live console
+      </div>
+      <h1
+        className="rise"
+        style={{
+          fontSize: "clamp(2.2rem,6vw,4.2rem)",
+          lineHeight: 1.04,
+          letterSpacing: "-0.035em",
+          fontWeight: 600,
+          marginTop: "1rem",
+          maxWidth: "20ch",
+          animationDelay: "60ms",
+        }}
+      >
+        Pay anyone, anywhere, in seconds. Priced like software.
+      </h1>
+      <p
+        className="rise"
+        style={{
+          fontSize: "clamp(1.02rem,2vw,1.22rem)",
+          color: "var(--text-2)",
+          marginTop: "1.3rem",
+          lineHeight: 1.6,
+          maxWidth: "46ch",
+          animationDelay: "120ms",
+        }}
+      >
+        A platform payout product built on a prefunded USDC float. Priced against
+        live FX, live on-chain gas, and the real USDC peg, settled through the
+        Stripe API.
+      </p>
+      <div className="rise" style={{ display: "flex", gap: 12, marginTop: "1.8rem", flexWrap: "wrap", animationDelay: "180ms" }}>
+        <Link href="/payouts" style={cta(true)}>Open the console →</Link>
+        <Link href="/brief" style={cta(false)}>Read the brief</Link>
+      </div>
+      <div className="rise" style={{ marginTop: "2.5rem", animationDelay: "240ms" }}>
+        <MarketTicker />
       </div>
     </section>
   );
 }
 
-function Problem() {
+function Features() {
+  const items: Array<[string, string, string]> = [
+    ["Live data", "Real FX, the real USDC peg, and live Base gas feed the fee math. No hardcoded assumptions.", "01"],
+    ["Real Stripe", "Each settlement creates a genuine USDC PaymentIntent in test mode, with a dashboard link.", "02"],
+    ["Real money math", "Integer base units, pure functions, a tested fee waterfall. No floating-point on money.", "03"],
+  ];
   return (
-    <Band tone="paper">
-      <SectionHead
-        eyebrow="The status quo"
-        title="Payouts are the slowest, most expensive part of a platform."
-      />
-      <div className="stat-row">
-        <Stat n="1–3 days" l="to settle an international wire" />
-        <Stat n="$25–45" l="in flat fees per cross-border payout" />
-        <Stat n="2–4%" l="lost to opaque FX spreads" />
+    <Section eyebrow="What it is">
+      <div className="feat-grid">
+        {items.map(([t, d, n]) => (
+          <div key={n} style={{ borderTop: "1px solid var(--line)", paddingTop: "1.1rem" }}>
+            <div className="num" style={{ color: "var(--text-3)", fontSize: "0.8rem" }}>{n}</div>
+            <h3 style={{ fontSize: "1.05rem", fontWeight: 600, margin: "0.5rem 0 0.4rem" }}>{t}</h3>
+            <p style={{ color: "var(--text-2)", fontSize: "0.9rem", lineHeight: 1.6 }}>{d}</p>
+          </div>
+        ))}
       </div>
-    </Band>
-  );
-}
-
-function Wedge() {
-  return (
-    <Band tone="navy">
-      <SectionHead
-        eyebrow="The wedge"
-        title="A prefunded USDC balance settles in seconds, at a cost you set."
-        light
-      />
-      <p
-        className="serif"
-        style={{
-          color: "rgba(255,255,255,0.82)",
-          fontSize: "1.15rem",
-          lineHeight: 1.7,
-          maxWidth: "44rem",
-        }}
-      >
-        Hold a stablecoin float, pay sellers out of it instantly, and recognize
-        revenue as a basis-point take rate instead of a fixed wire fee. The same
-        rail reaches a freelancer in Lagos and a marketplace seller in São Paulo.
-        The demo prices every payout end to end: platform fee, FX spread, network
-        cost, all-in basis points, and how much faster it clears than the legacy
-        rail it replaces.
-      </p>
-    </Band>
+    </Section>
   );
 }
 
 function HowItWorks() {
-  const steps: Array<[string, string, string]> = [
-    [
-      "01",
-      "Fund the float",
-      "The platform holds a USDC balance as working capital for payouts.",
-    ],
-    [
-      "02",
-      "Quote the payout",
-      "Amount in, fees itemized, net out, settlement time, all computed up front.",
-    ],
-    [
-      "03",
-      "Settle and reconcile",
-      "Funds move on-chain in seconds; the receipt ties to the platform ledger.",
-    ],
+  const rows: Array<[string, string]> = [
+    ["Fund the float", "The platform holds a USDC balance as payout working capital."],
+    ["Quote against live markets", "Peg, FX mid-market, and on-chain gas resolve the net and the all-in cost up front."],
+    ["Settle through Stripe", "A USDC PaymentIntent is created; the receipt ties back to the ledger."],
   ];
   return (
-    <Band tone="paper">
-      <SectionHead eyebrow="How it works" title="Three steps, fully modeled." />
-      <div className="step-grid">
-        {steps.map(([n, t, d]) => (
-          <div key={n} className="surface" style={{ padding: "1.4rem 1.5rem" }}>
-            <div className="num" style={{ color: "var(--gold)", fontSize: "1.6rem" }}>
-              {n}
+    <Section eyebrow="How it works">
+      <div style={{ display: "grid", gap: 0 }}>
+        {rows.map(([t, d], i) => (
+          <div
+            key={t}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "2.5rem 1fr",
+              gap: "1rem",
+              padding: "1.1rem 0",
+              borderBottom: i < rows.length - 1 ? "1px solid var(--line)" : "none",
+              alignItems: "baseline",
+            }}
+          >
+            <span className="num" style={{ color: "var(--iris-bright)" }}>0{i + 1}</span>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: "1rem" }}>{t}</div>
+              <div style={{ color: "var(--text-2)", fontSize: "0.9rem", marginTop: 3, lineHeight: 1.6 }}>{d}</div>
             </div>
-            <h3
-              style={{
-                fontSize: "1.15rem",
-                margin: "0.6rem 0 0.4rem",
-                fontWeight: 600,
-              }}
-            >
-              {t}
-            </h3>
-            <p
-              style={{
-                color: "var(--ink-soft)",
-                lineHeight: 1.6,
-                fontSize: "0.95rem",
-              }}
-            >
-              {d}
-            </p>
           </div>
         ))}
       </div>
-    </Band>
+    </Section>
   );
 }
 
 function Close() {
   return (
-    <Band tone="paper">
-      <div
-        style={{ textAlign: "center", maxWidth: "40rem", marginInline: "auto" }}
-      >
-        <h2
-          style={{
-            fontSize: "clamp(1.8rem,4vw,2.6rem)",
-            letterSpacing: "-0.02em",
-            fontWeight: 600,
-          }}
-        >
-          See the economics, live.
+    <Section eyebrow="">
+      <div className="panel" style={{ padding: "clamp(2rem,5vw,3.5rem)", textAlign: "center" }}>
+        <h2 style={{ fontSize: "clamp(1.6rem,3.5vw,2.4rem)", letterSpacing: "-0.025em", fontWeight: 600 }}>
+          See the economics move, live.
         </h2>
-        <p
-          className="serif"
-          style={{
-            color: "var(--ink-soft)",
-            marginTop: "0.8rem",
-            fontSize: "1.1rem",
-          }}
-        >
-          Move the sliders. Watch the all-in cost and settlement time respond.
+        <p style={{ color: "var(--text-2)", marginTop: "0.7rem", fontSize: "1.02rem" }}>
+          Adjust the payout. Watch the all-in cost and settlement time respond to real market data.
         </p>
-        <div style={{ marginTop: "1.6rem" }}>
-          <Link href="/payouts" style={cta(true)}>
-            Open the payout console →
-          </Link>
+        <div style={{ marginTop: "1.5rem" }}>
+          <Link href="/payouts" style={cta(true)}>Open the console →</Link>
         </div>
       </div>
-    </Band>
+    </Section>
   );
 }
 
-/* primitives -------------------------------------------------------------- */
-
-function Band({
-  tone,
-  children,
-}: {
-  tone: "paper" | "navy";
-  children: React.ReactNode;
-}) {
-  const navy = tone === "navy";
+function Section({ eyebrow, children }: { eyebrow: string; children: React.ReactNode }) {
   return (
-    <section
-      style={{
-        background: navy
-          ? "linear-gradient(160deg,var(--navy),var(--navy-deep))"
-          : "transparent",
-        borderTop: "1px solid var(--line)",
-        color: navy ? "#fff" : "inherit",
-      }}
-    >
-      <div className="shell" style={{ paddingBlock: "clamp(3rem,7vw,5rem)" }}>
-        {children}
-      </div>
+    <section className="shell" style={{ paddingBlock: "clamp(2.5rem,6vw,4rem)" }}>
+      {eyebrow && <div className="label" style={{ marginBottom: "1.5rem", color: "var(--text-3)" }}>{eyebrow}</div>}
+      {children}
       <style>{`
-        .stat-row { display:grid; gap:1.5rem; grid-template-columns:1fr; margin-top:2rem; }
-        .step-grid { display:grid; gap:1.25rem; grid-template-columns:1fr; margin-top:2rem; }
-        @media (min-width:760px){
-          .stat-row { grid-template-columns:repeat(3,1fr); }
-          .step-grid { grid-template-columns:repeat(3,1fr); }
-        }
+        .feat-grid { display:grid; gap:1.5rem; grid-template-columns:1fr; }
+        @media (min-width:760px){ .feat-grid { grid-template-columns:repeat(3,1fr); } }
       `}</style>
     </section>
-  );
-}
-
-function SectionHead({
-  eyebrow,
-  title,
-  light,
-}: {
-  eyebrow: string;
-  title: string;
-  light?: boolean;
-}) {
-  return (
-    <div style={{ maxWidth: "40rem" }}>
-      <div className="eyebrow">{eyebrow}</div>
-      <h2
-        style={{
-          fontSize: "clamp(1.6rem,3.6vw,2.4rem)",
-          letterSpacing: "-0.02em",
-          fontWeight: 600,
-          marginTop: "0.7rem",
-          lineHeight: 1.12,
-          color: light ? "#fff" : "var(--ink)",
-        }}
-      >
-        {title}
-      </h2>
-    </div>
-  );
-}
-
-function Stat({ n, l }: { n: string; l: string }) {
-  return (
-    <div style={{ borderTop: "2px solid var(--gold)", paddingTop: "0.9rem" }}>
-      <div
-        className="num"
-        style={{ fontSize: "2rem", color: "var(--navy)", fontWeight: 500 }}
-      >
-        {n}
-      </div>
-      <div style={{ color: "var(--ink-soft)", marginTop: 4, lineHeight: 1.5 }}>
-        {l}
-      </div>
-    </div>
   );
 }
 
@@ -292,12 +152,12 @@ function cta(primary: boolean): React.CSSProperties {
   return {
     display: "inline-block",
     textDecoration: "none",
-    borderRadius: 10,
-    padding: "0.8rem 1.3rem",
+    borderRadius: 8,
+    padding: "0.7rem 1.15rem",
     fontWeight: 500,
-    fontSize: "1rem",
-    border: `1px solid ${primary ? "var(--navy)" : "var(--line)"}`,
-    background: primary ? "var(--navy)" : "#fff",
-    color: primary ? "#fff" : "var(--ink)",
+    fontSize: "0.92rem",
+    border: `1px solid ${primary ? "var(--iris)" : "var(--line-2)"}`,
+    background: primary ? "var(--iris)" : "transparent",
+    color: primary ? "#fff" : "var(--text)",
   };
 }
