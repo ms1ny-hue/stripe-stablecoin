@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getMarketSnapshot } from "@/lib/feeds";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 export const revalidate = 30;
@@ -18,6 +18,7 @@ export async function GET() {
 
 async function getStripeSnapshot() {
   try {
+    const stripe = getStripe();
     const [balance, intents] = await Promise.all([
       stripe.balance.retrieve(),
       stripe.paymentIntents.list({ limit: 5 }),

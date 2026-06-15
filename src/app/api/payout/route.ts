@@ -3,7 +3,7 @@ import { z } from "zod";
 import { format } from "@/lib/stablecoin";
 import { compareToBaseline, quotePayout } from "@/lib/payout";
 import { getMarketSnapshot } from "@/lib/feeds";
-import { stripe, isLiveKey, dashboardUrl } from "@/lib/stripe";
+import { getStripe, isLiveKey, dashboardUrl } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
@@ -17,7 +17,7 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
-  if (isLiveKey) {
+  if (isLiveKey()) {
     return NextResponse.json(
       { error: "Refusing to run against a live key. Use a test-mode key." },
       { status: 400 },
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   try {
     // A real Stripe object in test mode: a USDC (pay-with-crypto) PaymentIntent
     // representing the settlement leg. Amount is the gross, in integer cents.
-    const intent = await stripe.paymentIntents.create({
+    const intent = await getStripe().paymentIntents.create({
       amount: Number(quote.gross.baseUnits),
       currency: "usd",
       payment_method_types: ["crypto"],
