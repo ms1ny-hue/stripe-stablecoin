@@ -47,15 +47,7 @@ export function MarketTicker() {
   const fx = feed?.market.fx.rates;
 
   return (
-    <div
-      className="panel"
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        alignItems: "stretch",
-        overflow: "hidden",
-      }}
-    >
+    <div className="panel ticker">
       <Head updatedAt={updatedAt} live={!err && !!feed} />
       <Cell label="USDC / USD" loading={!c}>
         <Val
@@ -71,8 +63,8 @@ export function MarketTicker() {
           sub={c ? `${c.eth24h >= 0 ? "+" : ""}${c.eth24h.toFixed(2)}%` : ""}
         />
       </Cell>
-      <Cell label="Base gas" loading={!g}>
-        <Val v={g ? `${g.gasGwei} gwei` : "—"} tone="dim" sub={g ? `$${g.transferUsd.toFixed(4)}/xfer` : ""} />
+      <Cell label="Base gas / xfer" loading={!g}>
+        <Val v={g ? `$${g.transferUsd.toFixed(4)}` : "—"} tone="dim" sub={g ? `${g.gasGwei} gwei` : ""} />
       </Cell>
       {FX_SHOW.map((code) => (
         <Cell key={code} label={`USD / ${code}`} loading={!fx}>
@@ -92,16 +84,7 @@ export function MarketTicker() {
 
 function Head({ updatedAt, live }: { updatedAt: string; live: boolean }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "0.7rem 1rem",
-        borderRight: "1px solid var(--line)",
-        minWidth: 150,
-      }}
-    >
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <span className={live ? "live-dot" : ""} style={!live ? offDot : undefined} />
       <div style={{ display: "grid" }}>
         <span className="label" style={{ color: live ? "var(--pos)" : "var(--neg)" }}>
@@ -125,15 +108,7 @@ function Cell({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        padding: "0.7rem 1rem",
-        borderRight: "1px solid var(--line)",
-        minWidth: 116,
-        opacity: loading ? 0.5 : 1,
-        transition: "opacity 0.3s",
-      }}
-    >
+    <div style={{ opacity: loading ? 0.5 : 1, transition: "opacity 0.3s" }}>
       <div className="label">{label}</div>
       {children}
     </div>

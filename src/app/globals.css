@@ -6,6 +6,8 @@
    motion. Numbers are tabular and color-coded only where they carry signal.
    =========================================================================== */
 :root {
+  /* render native controls (range, scrollbars, focus) in dark */
+  color-scheme: dark;
   --bg: #08090a;
   --bg-1: #0d0e10;
   --bg-2: #121316;
@@ -101,45 +103,37 @@ body {
   border: 0;
 }
 
+/* responsive header nav: drop secondary links on narrow screens */
+@media (max-width: 560px) {
+  .nav-extra {
+    display: none;
+  }
+}
+
+/* live market ticker: uniform grid with clean dividers, no ragged wrap */
+.ticker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  overflow: hidden;
+}
+.ticker > * {
+  padding: 0.7rem 1rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+
 /* accent focus ring used on interactive controls */
 .ring:focus-visible {
   outline: 2px solid var(--iris);
   outline-offset: 2px;
 }
 
-/* dark, restrained range sliders (kill the default bright track) */
+/* native range slider, dark via color-scheme + iris accent-color.
+   Robust across Chromium/Firefox without fragile pseudo-element styling. */
 input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 4px;
-  background: var(--line-2);
-  border-radius: 99px;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--iris);
-  border: 2px solid var(--bg);
-  cursor: pointer;
-  transition: transform 0.15s var(--ease);
-}
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  background: var(--iris-bright);
-}
-input[type="range"]::-moz-range-track {
-  height: 4px;
-  background: var(--line-2);
-  border-radius: 99px;
-}
-input[type="range"]::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--iris);
-  border: 2px solid var(--bg);
+  width: 100%;
+  accent-color: var(--iris);
   cursor: pointer;
 }
 

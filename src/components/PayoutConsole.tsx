@@ -303,18 +303,37 @@ function Field({ label, hint, children }: { label: string; hint: string; childre
 }
 
 function Range({ min, max, step, value, onChange, label }: { min: number; max: number; step: number; value: number; onChange: (v: number) => void; label: string }) {
+  const pct = Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
   return (
-    <input
-      type="range"
-      min={min}
-      max={max}
-      step={step}
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-      aria-label={label}
-      className="ring"
-      style={{ width: "100%", accentColor: "var(--iris)", cursor: "pointer" }}
-    />
+    <div style={{ position: "relative", height: 18, display: "flex", alignItems: "center" }}>
+      <div style={{ position: "absolute", left: 0, right: 0, height: 4, borderRadius: 99, background: "var(--line-2)" }} />
+      <div style={{ position: "absolute", left: 0, width: `${pct}%`, height: 4, borderRadius: 99, background: "var(--iris)" }} />
+      <div
+        style={{
+          position: "absolute",
+          left: `${pct}%`,
+          transform: "translateX(-50%)",
+          width: 14,
+          height: 14,
+          borderRadius: "50%",
+          background: "var(--iris)",
+          border: "2px solid var(--bg)",
+          boxShadow: "0 0 0 1px var(--line-2)",
+          pointerEvents: "none",
+        }}
+      />
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        aria-label={label}
+        className="ring"
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", margin: 0, opacity: 0, cursor: "pointer" }}
+      />
+    </div>
   );
 }
 

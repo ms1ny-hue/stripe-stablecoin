@@ -13,17 +13,17 @@ export function SiteHeader() {
         zIndex: 20,
       }}
     >
-      <div className="shell flex items-center justify-between" style={{ height: 56 }}>
+      <div className="shell flex items-center justify-between" style={{ height: 56, gap: 16 }}>
         <Link href="/" className="flex items-center gap-2.5" style={{ textDecoration: "none" }}>
           <Mark />
           <span className="num" style={{ fontSize: "0.85rem", letterSpacing: "-0.01em" }}>
             stablecoin<span style={{ color: "var(--text-3)" }}>/</span>payouts
           </span>
         </Link>
-        <nav className="flex items-center gap-6" style={{ fontSize: "0.85rem" }}>
+        <nav className="flex items-center gap-5" style={{ fontSize: "0.85rem", whiteSpace: "nowrap" }}>
           <Link href="/payouts" style={navLink}>Console</Link>
-          <Link href="/brief" style={navLink}>Brief</Link>
-          <a href="https://github.com/ms1ny-hue/stripe-stablecoin" style={navLink}>Source</a>
+          <Link href="/brief" style={navLink} className="nav-extra">Brief</Link>
+          <a href="https://github.com/ms1ny-hue/stripe-stablecoin" style={navLink} className="nav-extra">Source</a>
           <SimBadge />
         </nav>
       </div>
