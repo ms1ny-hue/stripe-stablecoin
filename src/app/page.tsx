@@ -69,12 +69,9 @@ function Hero() {
           <Link href="/payouts" style={cta(true)}>
             Try the payout demo →
           </Link>
-          <a
-            href="https://github.com/ms1ny-hue/stripe-stablecoin/blob/main/CASE_STUDY.md"
-            style={cta(false)}
-          >
+          <Link href="/brief" style={cta(false)}>
             Read the product brief
-          </a>
+          </Link>
         </div>
       </div>
     </section>

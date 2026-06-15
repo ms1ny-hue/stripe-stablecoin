@@ -76,6 +76,13 @@ body {
   font-family: var(--font-serif), Georgia, serif;
 }
 
+.lead {
+  font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin-top: 1.3rem;
+}
+
 .shell {
   width: 100%;
   max-width: var(--maxw);
