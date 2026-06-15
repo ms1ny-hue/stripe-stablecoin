@@ -1,11 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { format } from "./stablecoin";
-import {
-  compareToBaseline,
-  humanizeSeconds,
-  quotePayout,
-  settle,
-} from "./payout";
+import { compareToBaseline, humanizeSeconds, quotePayout } from "./payout";
 
 const base = {
   amountUsd: "1000.00",
@@ -67,17 +62,5 @@ describe("humanizeSeconds", () => {
     expect(humanizeSeconds(600)).toBe("10m");
     expect(humanizeSeconds(2 * 86_400)).toBe("2 days");
     expect(humanizeSeconds(0)).toBe("no faster");
-  });
-});
-
-describe("settle (simulated)", () => {
-  test("is deterministic per seed and always flagged simulated", () => {
-    const q = quotePayout(base);
-    const a = settle(q, 42);
-    const b = settle(q, 42);
-    expect(a).toEqual(b);
-    expect(a.simulated).toBe(true);
-    expect(a.txHash).toMatch(/^0x[0-9a-f]+$/);
-    expect(a.id.startsWith("po_sim_")).toBe(true);
   });
 });

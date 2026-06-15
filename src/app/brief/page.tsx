@@ -31,11 +31,11 @@ export default function BriefPage() {
           <p className="serif lead rise" style={{ animationDelay: "120ms" }}>
             A platform payout product that settles in seconds on a prefunded USDC
             balance and is priced as a basis-point take rate instead of a flat
-            wire fee. This is an independent concept with a working, simulated
-            demo and a real money engine behind it. It is not affiliated with any
-            employer or payments provider, and every figure in the demo is
-            simulated. The point is to show product judgment and the ability to
-            ship, not to claim a live service.
+            wire fee. This is an independent concept with a working demo, a real
+            money engine, and a real Stripe integration running in test mode. It
+            is not affiliated with any employer or payments provider, and no live
+            money moves. The point is to show product judgment and the ability to
+            ship.
           </p>
 
           <H2>Why this problem</H2>
@@ -98,12 +98,12 @@ export default function BriefPage() {
             money is handled as integer base units, never floating-point, with
             USDC at six decimals and fiat at cents. The quote, the fee waterfall,
             and the baseline comparison are pure functions that return new values
-            and never mutate inputs. Twenty unit tests cover the peg conversion,
-            the fee waterfall, the comparison, and the simulated settlement, with
-            coverage thresholds enforced in the test runner. The settlement
-            function is a clearly labeled stub that shows exactly where the real
-            payments and chain calls would go, so the demo never pretends to be
-            live.
+            and never mutate inputs. Unit tests cover the peg conversion, the fee
+            waterfall, and the baseline comparison, with coverage thresholds
+            enforced in the test runner. Pressing Create in Stripe calls the real
+            Stripe API in test mode and creates a USDC PaymentIntent, returning a
+            genuine object id that resolves in the Stripe dashboard. There are no
+            fake transaction hashes anywhere in the app.
           </P>
           <P>
             The repository also runs itself. Edit-time hooks format, lint, and
@@ -112,25 +112,27 @@ export default function BriefPage() {
             through the Claude CLI rather than a metered API.
           </P>
 
-          <H2>Simulated versus real</H2>
+          <H2>Test mode versus live</H2>
           <P>
-            Simulated: all balances, fees, FX spreads, settlement times,
-            transaction hashes, and receipts. There is no live money, no live
-            chain, and no live payments integration. Real: the money math, the fee
-            waterfall, the baseline comparison logic, the test suite, and the build
-            and automation around the repository.
+            Every Stripe call runs against a test-mode key, so the PaymentIntents
+            are real Stripe objects that you can open in the dashboard, but no live
+            money moves. Pricing, FX spreads, and settlement times are illustrative
+            rather than quoted rates. Real: the money math, the fee waterfall, the
+            baseline comparison, the test suite, the Stripe integration, and the
+            build and automation around the repository.
           </P>
 
           <H2>What I would build next</H2>
           <ol style={listStyle}>
             <Li>
-              Replace the settlement stub with a real test-mode integration and a
-              sandbox chain transfer, keeping the same itemized quote contract.
+              Move from a USDC PaymentIntent to a stablecoin financial account with
+              an outbound transfer once that access is enabled, keeping the same
+              itemized quote contract.
             </Li>
             <Li>
-              Add the reconciliation view that ties each on-chain transfer back to
-              the platform ledger, since reconciliation, not the transfer, is the
-              real work.
+              Add the reconciliation view that ties each transfer back to the
+              platform ledger, since reconciliation, not the transfer, is the real
+              work.
             </Li>
             <Li>
               Model the float as an actual balance with funding, drawdown, and a

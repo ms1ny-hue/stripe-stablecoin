@@ -38,8 +38,9 @@ export default function PayoutsPage() {
             }}
           >
             Every figure below is computed by the same money engine that ships in
-            this repo: integer base units, no floating-point drift. Settlement is
-            simulated, never live, and labeled as such.
+            this repo: integer base units, no floating-point drift. Pressing
+            Create in Stripe makes a real USDC PaymentIntent against a Stripe
+            test-mode key, so you get a live object id with no live money.
           </p>
         </div>
         <div className="rise" style={{ animationDelay: "180ms" }}>

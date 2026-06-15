@@ -130,31 +130,3 @@ export function humanizeSeconds(s: number): string {
   if (s < 86_400) return `${Math.round(s / 3600)}h`;
   return `${Math.round(s / 86_400)} days`;
 }
-
-/**
- * SIMULATED settlement. In production this is where the real calls live:
- *   const payout = await stripe.payouts.create({ amount, currency, ... })
- *   const tx = await chain.transfer({ to, amountBaseUnits })
- * Here we return a deterministic mock receipt so the demo never lies about
- * being live.
- */
-export interface Receipt {
-  readonly id: string;
-  readonly txHash: string;
-  readonly net: string;
-  readonly simulated: true;
-}
-
-export function settle(quote: PayoutQuote, seed: number): Receipt {
-  const hex = (n: number, len: number) =>
-    Math.abs(n).toString(16).padStart(len, "0").slice(0, len);
-  return {
-    id: `po_sim_${hex(seed * 2_654_435_761, 12)}`,
-    txHash: `0x${hex(seed * 40_503, 8)}${hex(seed * 2_246_822_519, 8)}${hex(
-      seed * 374_761_393,
-      8,
-    )}`,
-    net: format(quote.net),
-    simulated: true,
-  };
-}

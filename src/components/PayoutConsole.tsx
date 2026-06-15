@@ -3,10 +3,8 @@
 import { useMemo, useState } from "react";
 import {
   type BaselineKey,
-  type Receipt,
   compareToBaseline,
   quotePayout,
-  settle,
 } from "@/lib/payout";
 
 interface Destination {
@@ -27,11 +25,16 @@ const DESTINATIONS: readonly Destination[] = [
 const BASELINE_FOR = (d: Destination): BaselineKey =>
   d.code === "US" ? "ach" : "intlWire";
 
-/** Trim a 6dp USDC string to 2dp with thousands separators for headlines. */
-function display(value: string): string {
-  const [whole, frac = "00"] = value.split(".");
-  const withCommas = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return `${withCommas}.${frac.slice(0, 2)}`;
+interface PayoutResult {
+  readonly stripe: {
+    readonly id: string;
+    readonly status: string;
+    readonly amount: number;
+    readonly currency: string;
+    readonly livemode: boolean;
+    readonly dashboardUrl: string;
+  };
+  readonly quote: { readonly net: string };
 }
 
 export function PayoutConsole() {
@@ -39,8 +42,9 @@ export function PayoutConsole() {
   const [platformFeeBps, setPlatformFeeBps] = useState(50);
   const [dest, setDest] = useState<Destination>(DESTINATIONS[0]);
   const [instant, setInstant] = useState(true);
-  const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const [result, setResult] = useState<PayoutResult | null>(null);
   const [settling, setSettling] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const quote = useMemo(
     () =>
@@ -59,17 +63,36 @@ export function PayoutConsole() {
   );
 
   function reset() {
-    setReceipt(null);
+    setResult(null);
+    setError(null);
     setSettling(false);
   }
 
-  function onSettle() {
+  async function onSettle() {
     setSettling(true);
-    const seed = Math.round(amount * 100) + platformFeeBps + dest.fxSpreadBps;
-    window.setTimeout(() => {
-      setReceipt(settle(quote, seed));
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch("/api/payout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          amountUsd: amount.toFixed(2),
+          platformFeeBps,
+          fxSpreadBps: dest.fxSpreadBps,
+          instant,
+          destinationCurrency: dest.currency,
+          baseline: BASELINE_FOR(dest),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Request failed");
+      setResult(data as PayoutResult);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Settlement failed");
+    } finally {
       setSettling(false);
-    }, 1100);
+    }
   }
 
   return (
@@ -84,10 +107,8 @@ export function PayoutConsole() {
         {/* ---- controls ---- */}
         <section style={{ display: "grid", gap: "1.6rem" }}>
           <Field label="Payout amount" hint="What the platform sends">
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span className="num" style={{ fontSize: "2rem", color: "var(--navy)" }}>
-                ${display(amount.toFixed(2))}
-              </span>
+            <div className="num" style={{ fontSize: "2rem", color: "var(--navy)" }}>
+              ${displayFrom(quote.gross)}
             </div>
             <input
               type="range"
@@ -106,22 +127,19 @@ export function PayoutConsole() {
 
           <Field label="Destination" hint="Where the seller gets paid">
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {DESTINATIONS.map((d) => {
-                const active = d.code === dest.code;
-                return (
-                  <button
-                    key={d.code}
-                    onClick={() => {
-                      reset();
-                      setDest(d);
-                    }}
-                    style={chip(active)}
-                  >
-                    {d.label}
-                    <span style={{ opacity: 0.6, marginLeft: 6 }}>{d.currency}</span>
-                  </button>
-                );
-              })}
+              {DESTINATIONS.map((d) => (
+                <button
+                  key={d.code}
+                  onClick={() => {
+                    reset();
+                    setDest(d);
+                  }}
+                  style={chip(d.code === dest.code)}
+                >
+                  {d.label}
+                  <span style={{ opacity: 0.6, marginLeft: 6 }}>{d.currency}</span>
+                </button>
+              ))}
             </div>
           </Field>
 
@@ -199,21 +217,34 @@ export function PayoutConsole() {
             </div>
             <SettleButton
               settling={settling}
-              done={!!receipt}
+              done={!!result}
               onSettle={onSettle}
               onReset={reset}
             />
           </div>
 
-          {receipt && <ReceiptCard receipt={receipt} currency={dest.currency} />}
+          {error && (
+            <div
+              role="alert"
+              style={{
+                border: "1px solid #e4b7b0",
+                background: "#fcf3f1",
+                color: "#8a2f23",
+                borderRadius: 10,
+                padding: "0.8rem 1rem",
+                fontSize: "0.85rem",
+              }}
+            >
+              {error}
+            </div>
+          )}
+          {result && <ResultCard result={result} currency={dest.currency} />}
         </section>
       </div>
 
       <style>{`
         .console-grid { grid-template-columns: 1fr; }
-        @media (min-width: 860px) {
-          .console-grid { grid-template-columns: 1fr 1fr; }
-        }
+        @media (min-width: 860px) { .console-grid { grid-template-columns: 1fr 1fr; } }
       `}</style>
     </div>
   );
@@ -276,8 +307,13 @@ function Itemize({
 function displayFrom(m: { baseUnits: bigint; asset: "USD" | "USDC" }): string {
   const decimals = m.asset === "USD" ? 2 : 6;
   const divisor = 10n ** BigInt(decimals);
-  const whole = (m.baseUnits / divisor).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  const frac = (m.baseUnits % divisor).toString().padStart(decimals, "0").slice(0, 2);
+  const whole = (m.baseUnits / divisor)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const frac = (m.baseUnits % divisor)
+    .toString()
+    .padStart(decimals, "0")
+    .slice(0, 2);
   return `${whole}.${frac}`;
 }
 
@@ -301,18 +337,19 @@ function SettleButton({
   }
   return (
     <button onClick={onSettle} disabled={settling} style={btn(true)}>
-      {settling ? "Settling…" : "Settle payout"}
+      {settling ? "Creating in Stripe…" : "Create in Stripe"}
     </button>
   );
 }
 
-function ReceiptCard({
-  receipt,
+function ResultCard({
+  result,
   currency,
 }: {
-  receipt: Receipt;
+  result: PayoutResult;
   currency: string;
 }) {
+  const s = result.stripe;
   return (
     <div
       className="rise"
@@ -323,12 +360,29 @@ function ReceiptCard({
         background: "#fff",
       }}
     >
-      <div className="eyebrow">Settled · simulated</div>
-      <div style={{ display: "grid", gap: 6, marginTop: 8, fontSize: "0.85rem" }}>
-        <Row k="Payout ID" v={receipt.id} />
-        <Row k="Tx hash" v={receipt.txHash} />
-        <Row k="Delivered" v={`${display(receipt.net)} USDC → ${currency}`} />
+      <div className="eyebrow" style={{ color: "var(--good)" }}>
+        Stripe object created · test mode
       </div>
+      <div style={{ display: "grid", gap: 6, marginTop: 8, fontSize: "0.85rem" }}>
+        <Row k="PaymentIntent" v={s.id} />
+        <Row k="Status" v={s.status} />
+        <Row k="Amount" v={`${(s.amount / 100).toFixed(2)} ${s.currency.toUpperCase()}`} />
+        <Row k="Net to seller" v={`${result.quote.net} USDC → ${currency}`} />
+      </div>
+      <a
+        href={s.dashboardUrl}
+        target="_blank"
+        rel="noreferrer"
+        style={{
+          display: "inline-block",
+          marginTop: 10,
+          fontSize: "0.82rem",
+          color: "var(--navy)",
+          fontWeight: 500,
+        }}
+      >
+        View in Stripe Dashboard →
+      </a>
     </div>
   );
 }
@@ -337,7 +391,10 @@ function Row({ k, v }: { k: string; v: string }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
       <span style={{ color: "var(--ink-faint)" }}>{k}</span>
-      <span className="num" style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+      <span
+        className="num"
+        style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+      >
         {v}
       </span>
     </div>

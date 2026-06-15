@@ -57,12 +57,13 @@ export function SiteFooter() {
         className="shell"
         style={{ paddingBlock: "2.5rem", color: "var(--ink-faint)", fontSize: "0.82rem" }}
       >
-        <p style={{ maxWidth: "46rem", lineHeight: 1.7 }}>
+        <p style={{ maxWidth: "48rem", lineHeight: 1.7 }}>
           Independent product concept by Michael Stanat. Not affiliated with,
-          endorsed by, or representing any employer or payments provider. All
-          balances, fees, transactions, and settlement times are{" "}
-          <strong style={{ color: "var(--ink-soft)" }}>simulated</strong> for
-          illustration. Not financial advice and not a regulated service. Stripe,
+          endorsed by, or representing any employer or payments provider. Stripe
+          objects are created against a{" "}
+          <strong style={{ color: "var(--ink-soft)" }}>test-mode key</strong>, so
+          no live money moves. Pricing, FX spreads, and settlement times are
+          illustrative. Not financial advice and not a regulated service. Stripe,
           USDC, and other marks belong to their respective owners.
         </p>
       </div>
