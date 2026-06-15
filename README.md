@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stablecoin Payouts
 
-## Getting Started
+A working product concept for paying platform sellers globally in USDC: settled
+in seconds on a prefunded float, priced as a basis-point take rate instead of a
+flat wire fee.
 
-First, run the development server:
+**Live:** https://stripe-stablecoin.vercel.app
+**Brief:** https://stripe-stablecoin.vercel.app/brief
+
+This is an independent concept by Michael Stanat. It is not affiliated with any
+employer or payments provider. No live money moves: Stripe runs in test mode.
+
+## What is real
+
+- **Live market data.** The USDC peg (CoinGecko), FX mid-market rates
+  (ECB-derived), and Base on-chain gas (Blockscout) are pulled live and feed the
+  settlement math directly. No hardcoded assumptions.
+- **Real Stripe.** Each settlement creates a genuine USDC PaymentIntent against a
+  Stripe test-mode key and returns an object id that resolves in the dashboard.
+- **Real money math.** All money is integer base units, never floating-point.
+  The quote, fee waterfall, and baseline comparison are pure, tested functions.
+
+## Architecture
+
+| Path | Purpose |
+| --- | --- |
+| `src/lib/stablecoin.ts` | Integer base-unit money primitives (USDC 6dp, USD cents) |
+| `src/lib/payout.ts` | Quote engine: fee waterfall, live peg/gas/FX, baseline comparison |
+| `src/lib/feeds.ts` | Live market feeds with per-source timeouts and typed fallbacks |
+| `src/lib/stripe.ts` | Server-only Stripe client with a live-key guard |
+| `src/app/api/feeds` | Aggregated live market snapshot (30s revalidate) |
+| `src/app/api/payout` | Validates input, prices against live data, creates the PaymentIntent |
+| `src/components/PayoutConsole.tsx` | The interactive settlement console |
+| `src/components/MarketTicker.tsx` | Polling live market strip |
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # add a Stripe TEST-mode secret key
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+pnpm test        # vitest, 80% coverage thresholds
+pnpm typecheck   # tsc --noEmit
+pnpm lint        # eslint
+pnpm build       # production build
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Automation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The repo runs itself through the Claude CLI rather than a metered API. Edit-time
+hooks format, lint, and type-check on every change; a nightly agent runs the
+tests, opens fix and dependency pull requests, and writes a digest. See
+[AUTOMATION.md](AUTOMATION.md).
 
-## Learn More
+## Stack
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js (App Router), TypeScript, Stripe, Zod, Vitest, deployed on Vercel.
