@@ -5,6 +5,9 @@
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 0
 
+# portable timeout (macOS has no coreutils `timeout`; perl is always present)
+tmo() { perl -e 'my $t=shift; alarm $t; exec @ARGV or exit 127' "$@"; }
+
 IN="$(cat)"
 FILE="$(node -e 'let d="";process.stdin.on("data",c=>d+=c);process.stdin.on("end",()=>{try{const j=JSON.parse(d);process.stdout.write(j.tool_input?.file_path||j.tool_input?.path||"")}catch{process.stdout.write("")}})' <<<"$IN")"
 
@@ -21,7 +24,7 @@ case "$FILE" in
   *.ts|*.tsx|*.js|*.jsx)
     pnpm exec eslint --fix "$FILE" >/dev/null 2>&1 || true
     # Project-wide incremental typecheck, reaped if it hangs.
-    timeout 60 pnpm exec tsc --noEmit --pretty false --incremental \
+    tmo 60 pnpm exec tsc --noEmit --pretty false --incremental \
       --tsBuildInfoFile node_modules/.cache/tsc-hook.tsbuildinfo 2>&1 \
       | tail -20 || true
     ;;

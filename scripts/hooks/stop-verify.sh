@@ -5,15 +5,18 @@
 set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 0
 
+# portable timeout (macOS has no coreutils `timeout`; perl is always present)
+tmo() { perl -e 'my $t=shift; alarm $t; exec @ARGV or exit 127' "$@"; }
+
 fail=0
 
-if ! timeout 90 pnpm exec tsc --noEmit --pretty false --incremental \
+if ! tmo 90 pnpm exec tsc --noEmit --pretty false --incremental \
   --tsBuildInfoFile node_modules/.cache/tsc-stop.tsbuildinfo 2>&1 | tail -20; then
   echo "[stop-verify] typecheck failed" >&2
   fail=1
 fi
 
-if ! timeout 120 pnpm exec vitest run 2>&1 | tail -15; then
+if ! tmo 120 pnpm exec vitest run 2>&1 | tail -15; then
   echo "[stop-verify] tests failed" >&2
   fail=1
 fi
