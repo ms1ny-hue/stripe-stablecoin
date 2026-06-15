@@ -3,10 +3,10 @@
 **One line:** A platform payout product that settles in seconds on a prefunded
 USDC balance and is priced as a basis-point take rate instead of a flat wire fee.
 
-This is an independent concept with a working, simulated demo and a real money
-engine behind it. It is not affiliated with any employer or payments provider,
-and every figure in the demo is simulated. The point is to show product judgment
-and the ability to ship, not to claim a live service.
+This is an independent concept with a working demo, a real money engine, and a
+real Stripe integration running in test mode. It is not affiliated with any
+employer or payments provider, and no live money moves. The point is to show
+product judgment and the ability to ship.
 
 ## Why this problem
 
@@ -71,9 +71,9 @@ The demo is not a slide. It runs on a real, tested money engine:
 - **Tests.** Twenty unit tests cover the peg conversion, the fee waterfall, the
   baseline comparison, and the simulated settlement, with coverage thresholds
   enforced in the test runner.
-- **Honest settlement.** The settlement function is a clearly labeled stub. The
-  code shows exactly where the real payments and chain calls would go, so the
-  demo never pretends to be live.
+- **Real Stripe integration.** Creating a payout calls the Stripe API in test
+  mode and creates a USDC PaymentIntent, returning a genuine object id that
+  resolves in the Stripe dashboard. There are no fake transaction hashes.
 
 The repository also runs itself. Edit-time hooks format, lint, and type-check on
 every change, and a nightly agent runs the test suite, opens fix and dependency
@@ -81,22 +81,22 @@ pull requests, and writes a digest, all through the Claude CLI rather than a
 metered API. That is the same operational discipline I would bring to a real
 codebase.
 
-## Simulated versus real
+## Test mode versus live
 
 Being precise about this is part of the credibility:
 
-- **Simulated:** all balances, fees, FX spreads, settlement times, transaction
-  hashes, and receipts. There is no live money, no live chain, and no live
-  payments integration.
-- **Real:** the money math, the fee waterfall, the baseline comparison logic, the
-  test suite, and the build and automation around the repository.
+- **Test mode:** every Stripe call runs against a test-mode key, so the
+  PaymentIntents are real Stripe objects you can open in the dashboard, but no
+  live money moves. Pricing, FX spreads, and settlement times are illustrative.
+- **Real:** the money math, the fee waterfall, the baseline comparison, the test
+  suite, the Stripe integration, and the build and automation around the repo.
 
 ## What I would build next
 
 If this moved from concept to product, the near-term roadmap is straightforward:
 
-1. Replace the settlement stub with a real test-mode integration and a sandbox
-   chain transfer, keeping the same itemized quote contract.
+1. Move from a USDC PaymentIntent to a stablecoin financial account with an
+   outbound transfer once that access is enabled, keeping the same quote contract.
 2. Add the reconciliation view that ties each on-chain transfer back to the
    platform ledger, since reconciliation, not the transfer, is the real work.
 3. Model the float as an actual balance with funding, drawdown, and a low-balance
