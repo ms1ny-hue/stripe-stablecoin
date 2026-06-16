@@ -21,13 +21,15 @@ Current local branch is the default branch, already synced with origin.
 - Commit (conventional commit message), push, open a PR with a clear summary and
   a test plan. Title prefix: `fix:`.
 
-## 3. Dependency bumps
+## 3. Dependency check (digest-only — do NOT open routine dep PRs)
 
 - Run `pnpm dlx npm-check-updates` to list outdated deps.
-- Apply SAFE updates only: patch + minor. Hold major bumps — instead list them
-  in the digest as "manual review needed".
-- After bumping, run the full sweep. Only open the PR if green.
-- Branch `nightly/deps-<date>`, title prefix `chore(deps):`.
+- Do NOT open a pull request for routine patch/minor/major bumps. List what is
+  outdated in the digest only. Routine dependency PRs every night are noise.
+- The ONLY exception: a dependency with a known security advisory
+  (`pnpm audit` reports high/critical). Only then open a single
+  `chore(deps): security` PR, and flag it `needs-human` in the digest.
+- Never open more than one dependency PR, ever. If one already exists, skip.
 
 ## 4. Digest
 
@@ -41,6 +43,9 @@ Keep the digest terse. Do not write prose essays. Bullet points only.
 
 ## Guardrails
 
+- Before opening ANY pull request, run `gh pr list` and skip if an open
+  `nightly/*` PR already covers the same concern. Open at most one PR per night
+  total. Prefer the digest over a PR when in doubt.
 - If a fix would change public API or financial math semantics, do NOT auto-merge
   — open the PR and flag it `needs-human` in the digest.
 - If you cannot make the sweep green after a reasonable attempt, leave the working
