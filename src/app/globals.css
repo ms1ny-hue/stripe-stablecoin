@@ -1,35 +1,44 @@
 @import "tailwindcss";
 
 /* ===========================================================================
-   Linear-grade dark system. Near-black canvas, off-white type, a single iris
-   accent, hairline borders, mono labels, generous negative space, restrained
-   motion. Numbers are tabular and color-coded only where they carry signal.
+   Stripe-grade dark system. Layered depth (gradient mesh + grain + elevation),
+   an editorial type scale, scroll-reveal motion, and tabular color-coded data.
    =========================================================================== */
 :root {
-  /* render native controls (range, scrollbars, focus) in dark */
   color-scheme: dark;
-  --bg: #08090a;
-  --bg-1: #0d0e10;
-  --bg-2: #121316;
-  --bg-3: #181a1e;
-  --line: #1f2125;
-  --line-2: #292c31;
 
-  --text: #edeef0;
-  --text-2: #9a9ca2;
-  --text-3: #65676d;
+  --bg: #07080a;
+  --bg-1: #0c0e12;
+  --bg-2: #12141a;
+  --bg-3: #181b22;
+  --line: #1d2027;
+  --line-2: #2b2f38;
+
+  --text: #f1f2f4;
+  --text-2: #9ea2ac;
+  --text-3: #686d78;
 
   --iris: #6e79d6;
-  --iris-bright: #8a93ef;
-  --pos: #3fb155;
-  --neg: #ef5350;
-  --warn: #d4a64a;
+  --iris-bright: #939df2;
+  --teal: #3fbbb0;
+  --pos: #34c77b;
+  --neg: #f0584f;
+  --warn: #e0ab4c;
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  --maxw: 70rem;
+  --maxw: 74rem;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --shadow-card:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 2px 6px -3px rgba(0, 0, 0, 0.7),
+    0 24px 60px -36px rgba(0, 0, 0, 0.9);
+  --shadow-pop:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 30px 80px -40px rgba(110, 121, 214, 0.5),
+    0 12px 32px -16px rgba(0, 0, 0, 0.9);
 }
 
 @theme inline {
@@ -50,67 +59,127 @@ html {
 }
 
 body {
+  position: relative;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans), system-ui, sans-serif;
   font-feature-settings: "ss01", "cv01";
-  letter-spacing: -0.011em;
-  /* faint top glow + hairline grid wash */
-  background-image:
-    radial-gradient(60rem 32rem at 50% -8rem, rgba(110, 121, 214, 0.1), transparent 70%),
-    linear-gradient(transparent 0, transparent calc(100% - 1px), rgba(255, 255, 255, 0.012) 100%);
+  letter-spacing: -0.012em;
 }
 
-/* mono micro-label: uppercase, tracked, dim */
+/* ---- layered depth: drifting gradient mesh + fine grain ---- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -25%;
+  z-index: -2;
+  background:
+    radial-gradient(38% 42% at 18% 12%, rgba(99, 108, 214, 0.22), transparent 62%),
+    radial-gradient(34% 38% at 82% 8%, rgba(63, 187, 176, 0.14), transparent 60%),
+    radial-gradient(46% 50% at 65% 88%, rgba(124, 96, 214, 0.16), transparent 62%),
+    radial-gradient(30% 30% at 8% 80%, rgba(63, 187, 176, 0.1), transparent 60%);
+  filter: blur(48px) saturate(125%);
+  animation: meshDrift 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes meshDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(-3%, 2%, 0) scale(1.08);
+  }
+}
+
+/* ---- type ---- */
+.display {
+  font-size: clamp(2.6rem, 6.2vw, 5.1rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+}
+.gradient-text {
+  background: linear-gradient(108deg, #ffffff 28%, var(--iris-bright) 66%, var(--teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 .label {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.68rem;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-3);
 }
-
 .num {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+}
+.lead {
+  font-size: clamp(1.08rem, 2vw, 1.3rem);
+  line-height: 1.6;
+  color: var(--text-2);
+  margin-top: 1.3rem;
 }
 
 .shell {
   width: 100%;
   max-width: var(--maxw);
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  padding-inline: clamp(1.25rem, 4vw, 2.75rem);
 }
 
-.lead {
-  font-size: clamp(1.05rem, 2vw, 1.22rem);
-  line-height: 1.62;
-  color: var(--text-2);
-  margin-top: 1.2rem;
-}
-
-/* hairline panel */
+/* ---- surfaces ---- */
 .panel {
   background: linear-gradient(180deg, var(--bg-1), var(--bg));
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
 }
-
+.card {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0)),
+    var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+.card-hover {
+  transition:
+    transform 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-2);
+  box-shadow: var(--shadow-pop);
+}
 .hair {
   height: 1px;
   background: var(--line);
   border: 0;
 }
 
-/* responsive header nav: drop secondary links on narrow screens */
+/* responsive header nav */
 @media (max-width: 560px) {
   .nav-extra {
     display: none;
   }
 }
 
-/* live market ticker: uniform grid with clean dividers, no ragged wrap */
+/* live market ticker: uniform grid, clean dividers */
 .ticker {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -123,48 +192,41 @@ body {
   min-width: 0;
 }
 
-/* accent focus ring used on interactive controls */
 .ring:focus-visible {
   outline: 2px solid var(--iris);
   outline-offset: 2px;
 }
 
-/* native range slider, dark via color-scheme + iris accent-color.
-   Robust across Chromium/Firefox without fragile pseudo-element styling. */
 input[type="range"] {
   width: 100%;
   accent-color: var(--iris);
   cursor: pointer;
 }
 
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ---- motion ---- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.8s var(--ease),
+    transform 0.8s var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
 }
-.rise {
-  animation: rise 0.6s var(--ease) both;
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 .live-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--pos);
-  box-shadow: 0 0 0 3px rgba(63, 177, 85, 0.16);
+  box-shadow: 0 0 0 3px rgba(52, 199, 123, 0.16);
   animation: pulse 2.4s ease-in-out infinite;
 }
 
@@ -173,7 +235,13 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rise,
+  body::before {
+    animation: none;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
   .live-dot {
     animation: none;
   }

@@ -26,7 +26,8 @@ export default function BriefPage() {
               animationDelay: "60ms",
             }}
           >
-            Stablecoin Payouts: a working product concept
+            <span className="gradient-text">Stablecoin Payouts</span>: a working
+            product concept
           </h1>
           <p className="rise lead" style={{ animationDelay: "120ms" }}>
             A platform payout product that settles in seconds on a prefunded USDC
@@ -134,12 +135,13 @@ function cta(primary: boolean): React.CSSProperties {
   return {
     display: "inline-block",
     textDecoration: "none",
-    borderRadius: 8,
-    padding: "0.65rem 1.1rem",
+    borderRadius: 9,
+    padding: "0.7rem 1.15rem",
     fontWeight: 500,
     fontSize: "0.9rem",
-    border: `1px solid ${primary ? "var(--iris)" : "var(--line-2)"}`,
-    background: primary ? "var(--iris)" : "transparent",
-    color: primary ? "#fff" : "var(--text)",
+    border: `1px solid ${primary ? "transparent" : "var(--line-2)"}`,
+    background: primary ? "linear-gradient(180deg, var(--iris-bright), var(--iris))" : "rgba(255,255,255,0.02)",
+    color: primary ? "#0a0b12" : "var(--text)",
+    boxShadow: primary ? "0 8px 24px -10px rgba(110,121,214,0.7)" : "none",
   };
 }

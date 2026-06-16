@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { type BaselineKey, compareToBaseline, quotePayout } from "@/lib/payout";
+import { Tween } from "./motion";
 
 interface Destination {
   readonly code: string;
@@ -136,7 +137,7 @@ export function PayoutConsole() {
   const isUsdc = dest.currency === "USDC";
 
   return (
-    <div className="panel" style={{ overflow: "hidden" }}>
+    <div className="card" style={{ overflow: "hidden" }}>
       <div className="console-grid">
         {/* ---- controls ---- */}
         <section
@@ -190,7 +191,10 @@ export function PayoutConsole() {
           <div style={{ borderLeft: "2px solid var(--iris)", paddingLeft: "1rem" }}>
             <div className="label">Seller receives</div>
             <div className="num" style={{ fontSize: "2.2rem", marginTop: 4, color: "var(--text)" }}>
-              {displayFrom(quote.net)}
+              <Tween
+                value={Number(quote.net.baseUnits) / 1e6}
+                format={(n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              />
               <span style={{ fontSize: "0.95rem", color: "var(--text-3)", marginLeft: 8 }}>USDC</span>
             </div>
             {quote.localAmount && (

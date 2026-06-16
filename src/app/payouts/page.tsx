@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import { MarketTicker } from "@/components/MarketTicker";
 import { PayoutConsole } from "@/components/PayoutConsole";
+import { Reveal } from "@/components/motion";
 
 export const metadata: Metadata = {
   title: "Console — Stablecoin Payouts",
@@ -14,43 +15,32 @@ export default function PayoutsPage() {
     <>
       <SiteHeader />
       <main className="shell" style={{ paddingBlock: "clamp(2rem,5vw,3.5rem)" }}>
-        <div style={{ maxWidth: "44rem", marginBottom: "1.6rem" }}>
-          <div className="label rise" style={{ color: "var(--iris-bright)" }}>Settlement console</div>
-          <h1
-            className="rise"
-            style={{
-              fontSize: "clamp(1.9rem,5vw,3rem)",
-              letterSpacing: "-0.035em",
-              fontWeight: 600,
-              marginTop: "0.7rem",
-              animationDelay: "60ms",
-            }}
-          >
-            Price a payout against live markets.
-          </h1>
-          <p
-            className="rise"
-            style={{
-              fontSize: "1.05rem",
-              color: "var(--text-2)",
-              marginTop: "0.9rem",
-              lineHeight: 1.6,
-              animationDelay: "120ms",
-            }}
-          >
-            The peg, FX, and gas below are pulled live. Create in Stripe makes a
-            real USDC PaymentIntent against a test-mode key, so you get a genuine
-            object id with no live money.
-          </p>
+        <div style={{ maxWidth: "46rem", marginBottom: "1.8rem" }}>
+          <Reveal>
+            <div className="label" style={{ color: "var(--iris-bright)" }}>Settlement console</div>
+          </Reveal>
+          <Reveal delay={70}>
+            <h1 className="display" style={{ fontSize: "clamp(2rem,5vw,3.2rem)", marginTop: "0.8rem" }}>
+              Price a payout against{" "}
+              <span className="gradient-text">live markets</span>.
+            </h1>
+          </Reveal>
+          <Reveal delay={140}>
+            <p className="lead">
+              The peg, FX, and gas below are pulled live. Create in Stripe makes a
+              real USDC PaymentIntent against a test-mode key, so you get a genuine
+              object id with no live money.
+            </p>
+          </Reveal>
         </div>
 
-        <div className="rise" style={{ marginBottom: "1.4rem", animationDelay: "160ms" }}>
+        <Reveal delay={120} style={{ marginBottom: "1.4rem" }}>
           <MarketTicker />
-        </div>
+        </Reveal>
 
-        <div className="rise" style={{ animationDelay: "200ms" }}>
+        <Reveal delay={180}>
           <PayoutConsole />
-        </div>
+        </Reveal>
       </main>
       <SiteFooter />
     </>

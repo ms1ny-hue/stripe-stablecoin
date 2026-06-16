@@ -64,7 +64,11 @@ export function MarketTicker() {
         />
       </Cell>
       <Cell label="Base gas / xfer" loading={!g}>
-        <Val v={g ? `$${g.transferUsd.toFixed(4)}` : "—"} tone="dim" sub={g ? `${g.gasGwei} gwei` : ""} />
+        <Val
+          v={g ? (g.transferUsd < 0.0001 ? "<$0.0001" : `$${g.transferUsd.toFixed(4)}`) : "—"}
+          tone="dim"
+          sub={g ? `${g.gasGwei} gwei` : ""}
+        />
       </Cell>
       {FX_SHOW.map((code) => (
         <Cell key={code} label={`USD / ${code}`} loading={!fx}>
