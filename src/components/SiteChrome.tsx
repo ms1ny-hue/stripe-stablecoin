@@ -16,8 +16,9 @@ export function SiteHeader() {
       <div className="shell flex items-center justify-between" style={{ height: 56, gap: 16 }}>
         <Link href="/" className="flex items-center gap-2.5" style={{ textDecoration: "none" }}>
           <Mark />
-          <span className="num" style={{ fontSize: "0.85rem", letterSpacing: "-0.01em" }}>
-            stablecoin<span style={{ color: "var(--text-3)" }}>/</span>payouts
+          <span className="num" style={{ fontSize: "0.85rem", letterSpacing: "-0.01em", color: "var(--text-2)" }}>
+            stablecoin<span className="gradient-text" style={{ fontWeight: 600, padding: "0 1px" }}>/</span>
+            <span style={{ color: "var(--text)" }}>payouts</span>
           </span>
         </Link>
         <nav className="flex items-center gap-5" style={{ fontSize: "0.85rem", whiteSpace: "nowrap" }}>
@@ -59,21 +60,29 @@ const navLink: React.CSSProperties = {
 };
 
 function Mark() {
+  // Settlement node: a gradient diamond frame with a glowing center point.
   return (
-    <span
-      aria-hidden
-      style={{
-        width: 22,
-        height: 22,
-        borderRadius: 6,
-        border: "1px solid var(--line-2)",
-        background: "linear-gradient(150deg, #15171c, #0c0d10)",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <span style={{ width: 9, height: 9, borderRadius: "50%", border: "1.5px solid var(--iris-bright)" }} />
-    </span>
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
+      <defs>
+        <linearGradient id="markg" x1="2" y1="2" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#939df2" />
+          <stop offset="1" stopColor="#3fbbb0" />
+        </linearGradient>
+        <filter id="markglow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="1.6" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <path
+        d="M11 1.5 L20.5 11 L11 20.5 L1.5 11 Z"
+        stroke="url(#markg)"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <circle cx="11" cy="11" r="2.7" fill="url(#markg)" filter="url(#markglow)" />
+    </svg>
   );
 }
